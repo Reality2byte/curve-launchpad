@@ -49,6 +49,8 @@ pub struct Sell<'info> {
 }
 
 pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Result<()> {
+    //TODO: add check for initialisation or add comment why it is not needed
+    
     //check if bonding curve is complete
     require!(
         !ctx.accounts.bonding_curve.complete,
@@ -117,6 +119,9 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
 
     //transfer SOL back to user
     //TODO: check if this is correct
+    //TODO: just check tests for corectness, if fail then lookup  this 
+    // https://solana.com/developers/cookbook/programs/transfer-sol
+    //TODO: move to a function
     let from_account = &ctx.accounts.bonding_curve;
     let to_account = &ctx.accounts.user;
 

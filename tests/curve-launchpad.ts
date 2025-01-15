@@ -186,33 +186,33 @@ describe("curve-launchpad", () => {
   };
 
   before(async () => {
-    // await fundAccountSOL(connection, authority.publicKey, 5 * LAMPORTS_PER_SOL);
-    //
-    // await fundAccountSOL(
-    //   connection,
-    //   tokenCreator.publicKey,
-    //   200 * LAMPORTS_PER_SOL
-    // );
-    //
-    // await fundAccountSOL(
-    //   connection,
-    //   withdrawAuthority.publicKey,
-    //   5 * LAMPORTS_PER_SOL
-    // );
+    await fundAccountSOL(connection, authority.publicKey, 5 * LAMPORTS_PER_SOL);
+    
+    await fundAccountSOL(
+      connection,
+      tokenCreator.publicKey,
+      200 * LAMPORTS_PER_SOL
+    );
+    
+    await fundAccountSOL(
+      connection,
+      withdrawAuthority.publicKey,
+      5 * LAMPORTS_PER_SOL
+    );
   });
 
   it("Is initialized!", async () => {
 
-    const r = await program.methods
-        .setFee(
-            new BN((100n).toString())
-        )
-        .accounts({
-          user: authority.publicKey,
-        })
-        .signers([authority])
-        .rpc();
-    console.log({r})
+    // const r = await program.methods
+    //     .setFee(
+    //         new BN((100n).toString())
+    //     )
+    //     .accounts({
+    //       user: authority.publicKey,
+    //     })
+    //     .signers([authority])
+    //     .rpc();
+    // console.log({r})
 
     console.log({authority: authority.publicKey})
     await program.methods
@@ -228,22 +228,22 @@ describe("curve-launchpad", () => {
     assert.equal(global.authority.toBase58(), authority.publicKey.toBase58());
     assert.equal(global.initialized, true);
 
-    // await program.methods
-    //   .setParams(
-    //     feeRecipient.publicKey,
-    //     withdrawAuthority.publicKey,
-    //     new BN(DEFUALT_INITIAL_VIRTUAL_TOKEN_RESERVE.toString()),
-    //     new BN(DEFAULT_INITIAL_VIRTUAL_SOL_RESERVE.toString()),
-    //     new BN(DEFAULT_INITIAL_TOKEN_RESERVES.toString()),
-    //     new BN(DEFAULT_TOKEN_BALANCE.toString()),
-    //     new BN(DEFAULT_FEE_BASIS_POINTS.toString())
-    //   )
-    //   .accounts({
-    //     user: authority.publicKey,
-    //     program: program.programId,
-    //   })
-    //   .signers([authority])
-    //   .rpc();
+    await program.methods
+      .setParams(
+        feeRecipient.publicKey,
+        withdrawAuthority.publicKey,
+        new BN(DEFUALT_INITIAL_VIRTUAL_TOKEN_RESERVE.toString()),
+        new BN(DEFAULT_INITIAL_VIRTUAL_SOL_RESERVE.toString()),
+        new BN(DEFAULT_INITIAL_TOKEN_RESERVES.toString()),
+        new BN(DEFAULT_TOKEN_BALANCE.toString()),
+        new BN(DEFAULT_FEE_BASIS_POINTS.toString())
+      )
+      .accounts({
+        user: authority.publicKey,
+        program: program.programId,
+      })
+      .signers([authority])
+      .rpc();
 
   });
 
@@ -356,7 +356,7 @@ describe("curve-launchpad", () => {
 
     let buyTokenAmount = DEFAULT_TOKEN_BALANCE / 100n;
     let buyMaxSOLAmount = currentAMM.getBuyPrice(buyTokenAmount);
-    let fee = calculateFee(buyMaxSOLAmount, Number(DEFAULT_FEE_BASIS_POINTS_1));
+    let fee = calculateFee(buyMaxSOLAmount, Number(DEFAULT_FEE_BASIS_POINTS));
     buyMaxSOLAmount = buyMaxSOLAmount + fee;
 
     let buyResult = currentAMM.applyBuy(buyTokenAmount);

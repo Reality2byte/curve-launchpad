@@ -67,7 +67,7 @@ pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
     );
 
     require!(
-        ctx.accounts.bonding_curve.complete == true,
+        ctx.accounts.bonding_curve.complete,
         CurveLaunchpadError::BondingCurveNotComplete,
     );
 

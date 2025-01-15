@@ -57,7 +57,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
 
     //bonding curve is not complete
     require!(
-        ctx.accounts.bonding_curve.complete == false,
+        !ctx.accounts.bonding_curve.complete,
         CurveLaunchpadError::BondingCurveComplete,
     );
 
@@ -73,9 +73,11 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         CurveLaunchpadError::InsufficientTokens,
     );
 
-    require!(token_amount > 0, CurveLaunchpadError::MinBuy,);
+    //basically checks if token amount is not zero, it is u64 therefore no negatives.
+    //Maybe change mini buy to a higer value or remove because it will eventually fail later in apply_buy?
+    require!(token_amount > 0, CurveLaunchpadError::MinBuy);
 
-    let targe_token_amount = if ctx.accounts.bonding_curve_token_account.amount < token_amount {
+    let target_token_amount = if ctx.accounts.bonding_curve_token_account.amount < token_amount {
         ctx.accounts.bonding_curve_token_account.amount
     } else {
         token_amount
@@ -89,7 +91,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         ctx.accounts.global.initial_virtual_token_reserves as u128,
     );
 
-    let buy_result = amm.apply_buy(targe_token_amount as u128).unwrap();
+    let buy_result = amm.apply_buy(target_token_amount as u128).unwrap();
     let fee = calculate_fee(buy_result.sol_amount, ctx.accounts.global.fee_basis_points);
     let buy_amount_with_fee = buy_result.sol_amount + fee;
 
@@ -190,6 +192,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         real_token_reserves: bonding_curve.real_token_reserves,
     });
 
+    //TODO: check if there no possibility to deadlock here if last buy left very low amount of real tokens
     if bonding_curve.real_token_reserves == 0 {
         bonding_curve.complete = true;
 
