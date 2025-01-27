@@ -1,3 +1,4 @@
+use crate::calculate_fee;
 use crate::instructions::CurveLaunchpadError;
 use crate::state::Global;
 use anchor_lang::prelude::*;
@@ -26,6 +27,12 @@ pub fn set_fee(ctx: Context<SetFee>, fee_amount: u64) -> Result<()> {
     require!(
         global.authority == *ctx.accounts.user.key,
         CurveLaunchpadError::InvalidAuthority
+    );
+
+    //confirm new fee value is less than 10%
+    require!(
+        calculate_fee(100, fee_amount) <= 10,
+        CurveLaunchpadError::MaxFeeExceeded
     );
 
     global.fee_basis_points = fee_amount;

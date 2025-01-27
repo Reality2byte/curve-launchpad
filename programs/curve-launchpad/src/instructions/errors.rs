@@ -28,4 +28,6 @@ pub enum CurveLaunchpadError {
     InvalidFeeRecipient,
     #[msg("Invalid Withdraw Authority")]
     InvalidWithdrawAuthority,
+    #[msg("New fee value exceeds 10%")]
+    MaxFeeExceeded,
 }
