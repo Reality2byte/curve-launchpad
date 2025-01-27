@@ -232,9 +232,11 @@ describe("curve-launchpad", () => {
       .setParams(
         feeRecipient.publicKey,
         withdrawAuthority.publicKey,
-        new BN(DEFUALT_INITIAL_VIRTUAL_TOKEN_RESERVE.toString()),
-        new BN(DEFAULT_INITIAL_VIRTUAL_SOL_RESERVE.toString()),
-        new BN(DEFAULT_INITIAL_TOKEN_RESERVES.toString()),
+        {
+          virtualTokenReserves: new BN(DEFUALT_INITIAL_VIRTUAL_TOKEN_RESERVE.toString()), 
+          virtualSolReserves: new BN(DEFAULT_INITIAL_VIRTUAL_SOL_RESERVE.toString()),
+          realTokenReserves: new BN(DEFAULT_INITIAL_TOKEN_RESERVES.toString()),
+        },
         new BN(DEFAULT_TOKEN_BALANCE.toString()),
         new BN(DEFAULT_FEE_BASIS_POINTS.toString())
       )
@@ -602,7 +604,7 @@ describe("curve-launchpad", () => {
         errorCode = anchorError.error.errorCode.code;
       }
     }
-    assert.equal(errorCode, "MinSOLOutputExceeded");
+    assert.equal(errorCode, "MinSOLOutputNotReached");
   });
 
   //curve complete unit tests
@@ -818,9 +820,11 @@ describe("curve-launchpad", () => {
       .setParams(
         randomFeeRecipient.publicKey,
         randomWithdrawAuthority.publicKey,
-        new BN(1000),
-        new BN(2000),
-        new BN(3000),
+        {
+          virtualTokenReserves: new BN(1000),
+          virtualSolReserves: new BN(2000),
+          realTokenReserves: new BN(3000),
+        },
         new BN(4000),
         new BN(100)
       )
@@ -912,9 +916,11 @@ describe("curve-launchpad", () => {
         .setParams(
           randomFeeRecipient.publicKey,
           randomWithdrawAuthority.publicKey,
-          new BN(1000),
-          new BN(2000),
-          new BN(3000),
+          {
+            virtualTokenReserves: new BN(1000),
+            virtualSolReserves: new BN(2000),
+            realTokenReserves: new BN(3000),
+          },
           new BN(4000),
           new BN(100)
         )

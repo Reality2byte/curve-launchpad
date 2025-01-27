@@ -16,13 +16,18 @@ pub struct SetParams<'info> {
     system_program: Program<'info, System>,
 }
 
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct Reserves{
+    pub virtual_token_reserves: u64,
+    pub virtual_sol_reserves: u64,
+    pub real_token_reserves: u64,
+}
+
 pub fn set_params(
     ctx: Context<SetParams>,
     fee_recipient: Pubkey,
     withdraw_authority: Pubkey,
-    initial_virtual_token_reserves: u64,
-    initial_virtual_sol_reserves: u64,
-    initial_real_token_reserves: u64,
+    initial: Reserves,
     initial_token_supply: u64,
     fee_basis_points: u64,
 ) -> Result<()> {
@@ -38,12 +43,17 @@ pub fn set_params(
     );
 
     global.fee_recipient = fee_recipient;
-    global.initial_virtual_token_reserves = initial_virtual_token_reserves;
-    global.initial_virtual_sol_reserves = initial_virtual_sol_reserves;
-    global.initial_real_token_reserves = initial_real_token_reserves;
+    global.initial_virtual_token_reserves = initial.virtual_token_reserves;
+    global.initial_virtual_sol_reserves = initial.virtual_sol_reserves;
+    global.initial_real_token_reserves = initial.real_token_reserves;
     global.initial_token_supply = initial_token_supply;
     global.fee_basis_points = fee_basis_points;
     global.withdraw_authority = withdraw_authority;
+
+    //TODO: create later method new() for ParamsEven so you pass params without those
+    let initial_virtual_token_reserves = initial.virtual_token_reserves;
+    let initial_virtual_sol_reserves = initial.virtual_sol_reserves;
+    let initial_real_token_reserves = initial.real_token_reserves;
 
     emit_cpi!(SetParamsEvent {
         fee_recipient,
