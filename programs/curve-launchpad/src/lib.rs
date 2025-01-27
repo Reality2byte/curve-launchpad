@@ -33,6 +33,10 @@ pub mod curve_launchpad {
         withdraw::withdraw(ctx)
     }
 
+    pub fn set_authority(ctx: Context<SetAuthority>) -> Result<()> {
+        set_authority::set_authority(ctx)
+    }
+
     pub fn set_fee(ctx: Context<SetFee>, fee_basis_points: u64) -> Result<()> {
         set_fee::set_fee(ctx, fee_basis_points)
     }

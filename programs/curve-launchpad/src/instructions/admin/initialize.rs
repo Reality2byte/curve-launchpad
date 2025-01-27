@@ -24,7 +24,7 @@ pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
 
     require!(!global.initialized, CurveLaunchpadError::AlreadyInitialized,);
 
-    global.authority = *ctx.accounts.authority.to_account_info().key;
+    global.authority = *ctx.accounts.authority.key;
     global.initialized = true;
     global.initial_token_supply = DEFAULT_TOKEN_SUPPLY;
     global.initial_real_sol_reserves = 0;
