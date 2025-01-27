@@ -24,7 +24,7 @@ pub fn set_fee(ctx: Context<SetFee>, fee_amount: u64) -> Result<()> {
 
     //confirm user is the authority
     require!(
-        global.authority == *ctx.accounts.user.to_account_info().key,
+        global.authority == *ctx.accounts.user.key,
         CurveLaunchpadError::InvalidAuthority
     );
 

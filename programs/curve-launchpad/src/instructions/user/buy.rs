@@ -183,7 +183,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         sol_amount: buy_result.sol_amount,
         token_amount: buy_result.token_amount,
         is_buy: true,
-        user: *ctx.accounts.user.to_account_info().key,
+        user: *ctx.accounts.user.key,
         timestamp: Clock::get()?.unix_timestamp,
         virtual_sol_reserves: bonding_curve.virtual_sol_reserves,
         virtual_token_reserves: bonding_curve.virtual_token_reserves,
@@ -196,7 +196,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         bonding_curve.complete = true;
 
         emit_cpi!(CompleteEvent {
-            user: *ctx.accounts.user.to_account_info().key,
+            user: *ctx.accounts.user.key,
             mint: *ctx.accounts.mint.to_account_info().key,
             bonding_curve: *ctx.accounts.bonding_curve.to_account_info().key,
             timestamp: Clock::get()?.unix_timestamp,

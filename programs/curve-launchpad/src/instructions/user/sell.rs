@@ -157,7 +157,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
         sol_amount: sell_result.sol_amount,
         token_amount: sell_result.token_amount,
         is_buy: false,
-        user: *ctx.accounts.user.to_account_info().key,
+        user: *ctx.accounts.user.key,
         timestamp: Clock::get()?.unix_timestamp,
         virtual_sol_reserves: bonding_curve.virtual_sol_reserves,
         virtual_token_reserves: bonding_curve.virtual_token_reserves,

@@ -33,7 +33,7 @@ pub fn set_params(
 
     //confirm user is the authority
     require!(
-        global.authority == *ctx.accounts.user.to_account_info().key,
+        global.authority == *ctx.accounts.user.key,
         CurveLaunchpadError::InvalidAuthority
     );
 

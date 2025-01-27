@@ -163,7 +163,7 @@ pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -
         uri,
         mint: *ctx.accounts.mint.to_account_info().key,
         bonding_curve: *ctx.accounts.bonding_curve.to_account_info().key,
-        creator: *ctx.accounts.creator.to_account_info().key,
+        creator: *ctx.accounts.creator.key,
     });
 
     Ok(())
