@@ -1,6 +1,6 @@
 use crate::{
     state::{BondingCurve, Global},
-    CreateEvent, CurveLaunchpadError, DEFAULT_DECIMALS, MINT_AUTHORITY_SEED, METADATA_SEED
+    CreateEvent, CurveLaunchpadError, DEFAULT_DECIMALS, METADATA_SEED, MINT_AUTHORITY_SEED,
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -63,7 +63,7 @@ pub struct Create<'info> {
     #[account(
         mut,
         seeds = [
-            METADATA_SEED, 
+            METADATA_SEED,
             token_metadata_program.key.as_ref(),
             mint.to_account_info().key.as_ref()
         ],
