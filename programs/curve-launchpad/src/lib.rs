@@ -44,7 +44,7 @@ pub mod curve_launchpad {
         initial_virtual_token_reserves: u64,
         initial_virtual_sol_reserves: u64,
         initial_real_token_reserves: u64,
-        inital_token_supply: u64,
+        initial_token_supply: u64,
         fee_basis_points: u64,
     ) -> Result<()> {
         set_params::set_params(
@@ -54,7 +54,7 @@ pub mod curve_launchpad {
             initial_virtual_token_reserves,
             initial_virtual_sol_reserves,
             initial_real_token_reserves,
-            inital_token_supply,
+            initial_token_supply,
             fee_basis_points,
         )
     }

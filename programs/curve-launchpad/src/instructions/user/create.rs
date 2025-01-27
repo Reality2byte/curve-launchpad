@@ -1,6 +1,6 @@
 use crate::{
     state::{BondingCurve, Global},
-    CreateEvent, CurveLaunchpadError, DEFAULT_DECIMALS,
+    CreateEvent, CurveLaunchpadError, DEFAULT_DECIMALS, MINT_AUTHORITY_SEED, METADATA_SEED
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -31,7 +31,7 @@ pub struct Create<'info> {
 
     /// CHECK: Using seed to validate mint_authority account
     #[account(
-        seeds=[b"mint-authority"],
+        seeds=[MINT_AUTHORITY_SEED],
         bump,
     )]
     mint_authority: UncheckedAccount<'info>,
@@ -63,7 +63,7 @@ pub struct Create<'info> {
     #[account(
         mut,
         seeds = [
-            b"metadata", 
+            METADATA_SEED, 
             token_metadata_program.key.as_ref(),
             mint.to_account_info().key.as_ref()
         ],
@@ -95,8 +95,7 @@ pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -
         &ctx.accounts.bonding_curve.get_lamports()
     );
 
-    //TODO: make mint-authority string as CONSTANT
-    let seeds = &["mint-authority".as_bytes(), &[ctx.bumps.mint_authority]];
+    let seeds = &[MINT_AUTHORITY_SEED, &[ctx.bumps.mint_authority]];
     let signer = [&seeds[..]];
 
     let token_data: DataV2 = DataV2 {
