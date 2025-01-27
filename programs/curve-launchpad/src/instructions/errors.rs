@@ -19,7 +19,7 @@ pub enum CurveLaunchpadError {
     #[msg("Max SOL Cost Exceeded")]
     MaxSOLCostExceeded,
     #[msg("Min SOL Output Exceeded")]
-    MinSOLOutputExceeded,
+    MinSOLOutputNotReached,
     #[msg("Min buy is 1 Token")]
     MinBuy,
     #[msg("Min sell is 1 Token")]

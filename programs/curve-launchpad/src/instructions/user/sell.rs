@@ -115,7 +115,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
     //confirm min sol output is greater than sol output
     require!(
         sell_amount_minus_fee >= min_sol_output,
-        CurveLaunchpadError::MinSOLOutputExceeded,
+        CurveLaunchpadError::MinSOLOutputNotReached,
     );
 
     //transfer SPL
