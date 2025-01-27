@@ -106,7 +106,7 @@ pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
     let from_account = &ctx.accounts.bonding_curve;
     let to_account = &ctx.accounts.user;
 
-    let min_balance = Rent::get()?.minimum_balance(8 + BondingCurve::INIT_SPACE as usize);
+    let min_balance = Rent::get()?.minimum_balance(8 + BondingCurve::INIT_SPACE);
 
     let total_bonding_curve_lamports = from_account.get_lamports() - min_balance;
 
