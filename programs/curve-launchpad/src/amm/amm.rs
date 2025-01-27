@@ -96,7 +96,7 @@ impl AMM {
     }
 
     pub fn get_sell_price(&self, tokens: u128) -> Option<u128> {
-        if tokens <= 0 || tokens > self.virtual_token_reserves {
+        if tokens == 0 || tokens > self.virtual_token_reserves {
             return None;
         }
 
