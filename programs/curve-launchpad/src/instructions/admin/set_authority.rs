@@ -11,7 +11,7 @@ pub struct SetAuthority<'info> {
     )]
     global: Box<Account<'info, Global>>,
 
-    user: Signer<'info>,
+    old_authority: Signer<'info>,
 
     new_authority: Signer<'info>,
 
@@ -24,9 +24,9 @@ pub fn set_authority(ctx: Context<SetAuthority>) -> Result<()> {
     //confirm program is initialized
     require!(global.initialized, CurveLaunchpadError::NotInitialized);
 
-    //confirm user is the authority
+    //confirm authority
     require!(
-        global.authority == *ctx.accounts.user.key,
+        global.authority == *ctx.accounts.old_authority.key,
         CurveLaunchpadError::InvalidAuthority
     );
 
