@@ -79,7 +79,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
 
     require!(token_amount > 0, CurveLaunchpadError::MinSell,);
 
-    let mut amm = amm::amm::AMM::new(
+    let mut amm = amm::AMM::new(
         ctx.accounts.bonding_curve.virtual_sol_reserves as u128,
         ctx.accounts.bonding_curve.virtual_token_reserves as u128,
         ctx.accounts.bonding_curve.real_sol_reserves as u128,

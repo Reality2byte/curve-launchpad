@@ -85,7 +85,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         token_amount
     };
 
-    let mut amm = amm::amm::AMM::new(
+    let mut amm = amm::AMM::new(
         ctx.accounts.bonding_curve.virtual_sol_reserves as u128,
         ctx.accounts.bonding_curve.virtual_token_reserves as u128,
         ctx.accounts.bonding_curve.real_sol_reserves as u128,
