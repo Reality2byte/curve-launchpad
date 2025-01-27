@@ -1,5 +1,7 @@
 use crate::{
-    amm, calculate_fee, state::{BondingCurve, Global}, CurveLaunchpadError, TradeEvent
+    amm, calculate_fee,
+    state::{BondingCurve, Global},
+    CurveLaunchpadError, TradeEvent,
 };
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
@@ -50,7 +52,7 @@ pub struct Sell<'info> {
 
 pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Result<()> {
     //TODO: add check for initialisation or add comment why it is not needed
-    
+
     //check if bonding curve is complete
     require!(
         !ctx.accounts.bonding_curve.complete,
@@ -119,7 +121,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
 
     //transfer SOL back to user
     //TODO: check if this is correct
-    //TODO: just check tests for corectness, if fail then lookup  this 
+    //TODO: just check tests for corectness, if fail then lookup  this
     // https://solana.com/developers/cookbook/programs/transfer-sol
     //TODO: move to a function
     let from_account = &ctx.accounts.bonding_curve;
@@ -131,7 +133,6 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
     //transfer fee to fee recipient
     **from_account.to_account_info().try_borrow_mut_lamports()? -= fee;
     **ctx.accounts.fee_recipient.try_borrow_mut_lamports()? += fee;
-
 
     let bonding_curve = &mut ctx.accounts.bonding_curve;
     bonding_curve.real_token_reserves = amm.real_token_reserves as u64;

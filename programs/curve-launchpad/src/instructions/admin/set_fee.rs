@@ -1,6 +1,6 @@
-use crate::{state::Global};
-use anchor_lang::prelude::*;
 use crate::instructions::CurveLaunchpadError;
+use crate::state::Global;
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct SetFee<'info> {
@@ -16,17 +16,11 @@ pub struct SetFee<'info> {
     system_program: Program<'info, System>,
 }
 
-pub fn set_fee(
-    ctx: Context<SetFee>,
-    fee_amount: u64
-) -> Result<()> {
+pub fn set_fee(ctx: Context<SetFee>, fee_amount: u64) -> Result<()> {
     let global = &mut ctx.accounts.global;
 
     //confirm program is initialized
-    require!(
-        global.initialized,
-        CurveLaunchpadError::NotInitialized
-    );
+    require!(global.initialized, CurveLaunchpadError::NotInitialized);
 
     //confirm user is the authority
     require!(

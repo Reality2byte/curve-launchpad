@@ -29,17 +29,14 @@ pub fn set_params(
     let global = &mut ctx.accounts.global;
 
     //confirm program is initialized
-    require!(
-        global.initialized,
-        CurveLaunchpadError::NotInitialized
-    );
+    require!(global.initialized, CurveLaunchpadError::NotInitialized);
 
     //confirm user is the authority
     require!(
         global.authority == *ctx.accounts.user.to_account_info().key,
         CurveLaunchpadError::InvalidAuthority
     );
-    
+
     global.fee_recipient = fee_recipient;
     global.initial_virtual_token_reserves = initial_virtual_token_reserves;
     global.initial_virtual_sol_reserves = initial_virtual_sol_reserves;

@@ -1,7 +1,6 @@
 use crate::{state::Global, CurveLaunchpadError, DEFAULT_TOKEN_SUPPLY};
 use anchor_lang::prelude::*;
 
-
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(mut)]
@@ -19,15 +18,11 @@ pub struct Initialize<'info> {
     system_program: Program<'info, System>,
 }
 
-
 pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
     msg!("Calling initialize");
     let global = &mut ctx.accounts.global;
 
-    require!(
-        !global.initialized,
-        CurveLaunchpadError::AlreadyInitialized,
-    );
+    require!(!global.initialized, CurveLaunchpadError::AlreadyInitialized,);
 
     global.authority = *ctx.accounts.authority.to_account_info().key;
     global.initialized = true;

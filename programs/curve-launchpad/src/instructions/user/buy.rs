@@ -2,7 +2,9 @@ use anchor_lang::{prelude::*, solana_program::system_instruction};
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 use crate::{
-    amm, calculate_fee, state::{BondingCurve, Global}, CompleteEvent, CurveLaunchpadError, TradeEvent
+    amm, calculate_fee,
+    state::{BondingCurve, Global},
+    CompleteEvent, CurveLaunchpadError, TradeEvent,
 };
 
 #[event_cpi]
@@ -106,7 +108,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         ctx.accounts.user.lamports() >= buy_amount_with_fee,
         CurveLaunchpadError::InsufficientSOL,
     );
-    
+
     // transfer SOL to bonding curve
     let from_account = &ctx.accounts.user;
     let to_bonding_curve_account = &ctx.accounts.bonding_curve;
@@ -130,11 +132,8 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
     //transfer SOL to fee recipient
     let to_fee_recipient_account = &ctx.accounts.fee_recipient;
 
-    let transfer_instruction = system_instruction::transfer(
-        from_account.key,
-        to_fee_recipient_account.key,
-        fee,
-    );
+    let transfer_instruction =
+        system_instruction::transfer(from_account.key, to_fee_recipient_account.key, fee);
 
     anchor_lang::solana_program::program::invoke_signed(
         &transfer_instruction,

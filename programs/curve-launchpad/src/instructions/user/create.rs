@@ -1,5 +1,6 @@
 use crate::{
-    state::{BondingCurve, Global}, CreateEvent, CurveLaunchpadError, DEFAULT_DECIMALS
+    state::{BondingCurve, Global},
+    CreateEvent, CurveLaunchpadError, DEFAULT_DECIMALS,
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -63,7 +64,7 @@ pub struct Create<'info> {
         mut,
         seeds = [
             b"metadata", 
-            token_metadata_program.key.as_ref(), 
+            token_metadata_program.key.as_ref(),
             mint.to_account_info().key.as_ref()
         ],
         seeds::program = token_metadata_program.key(),
@@ -82,7 +83,6 @@ pub struct Create<'info> {
     rent: Sysvar<'info, Rent>,
 }
 
-
 pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -> Result<()> {
     //confirm program is initialized
     require!(
@@ -90,8 +90,12 @@ pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -
         CurveLaunchpadError::NotInitialized
     );
 
-    msg!("create::BondingCurve::get_lamports: {:?}", &ctx.accounts.bonding_curve.get_lamports());
+    msg!(
+        "create::BondingCurve::get_lamports: {:?}",
+        &ctx.accounts.bonding_curve.get_lamports()
+    );
 
+    //TODO: make mint-authority string as CONSTANT
     let seeds = &["mint-authority".as_bytes(), &[ctx.bumps.mint_authority]];
     let signer = [&seeds[..]];
 

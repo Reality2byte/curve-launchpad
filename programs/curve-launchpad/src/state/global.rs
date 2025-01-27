@@ -1,7 +1,5 @@
 use anchor_lang::prelude::*;
 
-
-
 #[account]
 #[derive(InitSpace)]
 pub struct Global {
@@ -18,5 +16,5 @@ pub struct Global {
 }
 
 impl Global {
-   pub const SEED_PREFIX: &'static [u8; 6] = b"global";
+    pub const SEED_PREFIX: &'static [u8; 6] = b"global";
 }
