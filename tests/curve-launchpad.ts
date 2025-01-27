@@ -809,129 +809,129 @@ describe("curve-launchpad", () => {
     assert.notEqual(bondingCurveAccount, null);
   });
 
-  // //param unit tests
-  // it("can set params", async () => {
-  //   const randomFeeRecipient = anchor.web3.Keypair.generate();
-  //   const randomWithdrawAuthority = anchor.web3.Keypair.generate();
-  //
-  //   let tx = await program.methods
-  //     .setParams(
-  //       randomFeeRecipient.publicKey,
-  //       randomWithdrawAuthority.publicKey,
-  //       new BN(1000),
-  //       new BN(2000),
-  //       new BN(3000),
-  //       new BN(4000),
-  //       new BN(100)
-  //     )
-  //     .accounts({
-  //       user: authority.publicKey,
-  //       program: program.programId,
-  //     })
-  //     .transaction();
-  //
-  //   let txResult = await sendTransaction(
-  //     program,
-  //     tx,
-  //     [authority],
-  //     authority.publicKey
-  //   );
-  //
-  //   let global = await program.account.global.fetch(globalPDA);
-  //
-  //   let setParamsEvents = txResult.events.filter((event) => {
-  //     return event.name === "setParamsEvent";
-  //   });
-  //
-  //   assert.equal(setParamsEvents.length, 1);
-  //
-  //   let setParamsEvent = toEvent("setParamsEvent", setParamsEvents[0]);
-  //   assert.notEqual(setParamsEvent, null);
-  //   if (setParamsEvent != null) {
-  //     assert.equal(
-  //       setParamsEvent.feeRecipient.toBase58(),
-  //       randomFeeRecipient.publicKey.toBase58()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.withdrawAuthority.toBase58(),
-  //       randomWithdrawAuthority.publicKey.toBase58()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.initialVirtualTokenReserves.toString(),
-  //       new BN(1000).toString()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.initialVirtualSolReserves.toString(),
-  //       new BN(2000).toString()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.initialRealTokenReserves.toString(),
-  //       new BN(3000).toString()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.initialTokenSupply.toString(),
-  //       new BN(4000).toString()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.feeBasisPoints.toString(),
-  //       new BN(100).toString()
-  //     );
-  //   }
-  //
-  //   assert.equal(
-  //     global.feeRecipient.toBase58(),
-  //     randomFeeRecipient.publicKey.toBase58()
-  //   );
-  //   assert.equal(
-  //     global.withdrawAuthority.toBase58(),
-  //     randomWithdrawAuthority.publicKey.toBase58()
-  //   );
-  //   assert.equal(
-  //     global.initialVirtualTokenReserves.toString(),
-  //     new BN(1000).toString()
-  //   );
-  //   assert.equal(
-  //     global.initialVirtualSolReserves.toString(),
-  //     new BN(2000).toString()
-  //   );
-  //   assert.equal(
-  //     global.initialRealTokenReserves.toString(),
-  //     new BN(3000).toString()
-  //   );
-  //   assert.equal(global.initialTokenSupply.toString(), new BN(4000).toString());
-  //   assert.equal(global.feeBasisPoints.toString(), new BN(100).toString());
-  // });
-  //
-  // it("can't set params as non-authority", async () => {
-  //   let errorCode = "";
-  //   try {
-  //     const randomFeeRecipient = anchor.web3.Keypair.generate();
-  //     const randomWithdrawAuthority = anchor.web3.Keypair.generate();
-  //
-  //     await program.methods
-  //       .setParams(
-  //         randomFeeRecipient.publicKey,
-  //         randomWithdrawAuthority.publicKey,
-  //         new BN(1000),
-  //         new BN(2000),
-  //         new BN(3000),
-  //         new BN(4000),
-  //         new BN(100)
-  //       )
-  //       .accounts({
-  //         user: tokenCreator.publicKey,
-  //         program: program.programId,
-  //       })
-  //       .signers([tokenCreator])
-  //       .rpc();
-  //   } catch (err) {
-  //     let anchorError = getAnchorError(err);
-  //     if (anchorError) {
-  //       errorCode = anchorError.error.errorCode.code;
-  //     }
-  //   }
-  //   assert.equal(errorCode, "InvalidAuthority");
-  // });
+  //param unit tests
+  it("can set params", async () => {
+    const randomFeeRecipient = anchor.web3.Keypair.generate();
+    const randomWithdrawAuthority = anchor.web3.Keypair.generate();
+  
+    let tx = await program.methods
+      .setParams(
+        randomFeeRecipient.publicKey,
+        randomWithdrawAuthority.publicKey,
+        new BN(1000),
+        new BN(2000),
+        new BN(3000),
+        new BN(4000),
+        new BN(100)
+      )
+      .accounts({
+        user: authority.publicKey,
+        program: program.programId,
+      })
+      .transaction();
+  
+    let txResult = await sendTransaction(
+      program,
+      tx,
+      [authority],
+      authority.publicKey
+    );
+  
+    let global = await program.account.global.fetch(globalPDA);
+  
+    let setParamsEvents = txResult.events.filter((event) => {
+      return event.name === "setParamsEvent";
+    });
+  
+    assert.equal(setParamsEvents.length, 1);
+  
+    let setParamsEvent = toEvent("setParamsEvent", setParamsEvents[0]);
+    assert.notEqual(setParamsEvent, null);
+    if (setParamsEvent != null) {
+      assert.equal(
+        setParamsEvent.feeRecipient.toBase58(),
+        randomFeeRecipient.publicKey.toBase58()
+      );
+      assert.equal(
+        setParamsEvent.withdrawAuthority.toBase58(),
+        randomWithdrawAuthority.publicKey.toBase58()
+      );
+      assert.equal(
+        setParamsEvent.initialVirtualTokenReserves.toString(),
+        new BN(1000).toString()
+      );
+      assert.equal(
+        setParamsEvent.initialVirtualSolReserves.toString(),
+        new BN(2000).toString()
+      );
+      assert.equal(
+        setParamsEvent.initialRealTokenReserves.toString(),
+        new BN(3000).toString()
+      );
+      assert.equal(
+        setParamsEvent.initialTokenSupply.toString(),
+        new BN(4000).toString()
+      );
+      assert.equal(
+        setParamsEvent.feeBasisPoints.toString(),
+        new BN(100).toString()
+      );
+    }
+  
+    assert.equal(
+      global.feeRecipient.toBase58(),
+      randomFeeRecipient.publicKey.toBase58()
+    );
+    assert.equal(
+      global.withdrawAuthority.toBase58(),
+      randomWithdrawAuthority.publicKey.toBase58()
+    );
+    assert.equal(
+      global.initialVirtualTokenReserves.toString(),
+      new BN(1000).toString()
+    );
+    assert.equal(
+      global.initialVirtualSolReserves.toString(),
+      new BN(2000).toString()
+    );
+    assert.equal(
+      global.initialRealTokenReserves.toString(),
+      new BN(3000).toString()
+    );
+    assert.equal(global.initialTokenSupply.toString(), new BN(4000).toString());
+    assert.equal(global.feeBasisPoints.toString(), new BN(100).toString());
+  });
+  
+  it("can't set params as non-authority", async () => {
+    let errorCode = "";
+    try {
+      const randomFeeRecipient = anchor.web3.Keypair.generate();
+      const randomWithdrawAuthority = anchor.web3.Keypair.generate();
+  
+      await program.methods
+        .setParams(
+          randomFeeRecipient.publicKey,
+          randomWithdrawAuthority.publicKey,
+          new BN(1000),
+          new BN(2000),
+          new BN(3000),
+          new BN(4000),
+          new BN(100)
+        )
+        .accounts({
+          user: tokenCreator.publicKey,
+          program: program.programId,
+        })
+        .signers([tokenCreator])
+        .rpc();
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "InvalidAuthority");
+  });
 });
 
 //TODO: Tests
