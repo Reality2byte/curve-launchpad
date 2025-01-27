@@ -934,5 +934,6 @@ describe("curve-launchpad", () => {
   });
 });
 
-//TODO: Tests
-// test sell whole curve
+//TODO: test sell whole curve
+
+//TODO: test authority change

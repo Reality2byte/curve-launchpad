@@ -50,12 +50,28 @@ pub struct Sell<'info> {
     token_program: Program<'info, Token>,
 }
 
+// https://solana.com/developers/cookbook/programs/transfer-sol
+fn transfer_lamports(
+    from_account: &AccountInfo,
+    to_account: &AccountInfo,
+    amount_of_lamports: u64,
+) -> Result<()> {
+    // Does the from account have enough lamports to transfer?
+    if **from_account.try_borrow_lamports()? < amount_of_lamports {
+        return Err(CurveLaunchpadError::InsufficientSOL.into());
+    }
+    // Debit from_account and credit to_account
+    **from_account.try_borrow_mut_lamports()? -= amount_of_lamports;
+    **to_account.try_borrow_mut_lamports()? += amount_of_lamports;
+    Ok(())
+}
+
 pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Result<()> {
     require!(
         ctx.accounts.global.initialized,
         CurveLaunchpadError::NotInitialized
     );
-    
+
     //check if bonding curve is complete
     require!(
         !ctx.accounts.bonding_curve.complete,
@@ -123,19 +139,12 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
     )?;
 
     //transfer SOL back to user
-    //TODO: check if this is correct
-    //TODO: just check tests for corectness, if fail then lookup  this
-    // https://solana.com/developers/cookbook/programs/transfer-sol
-    //TODO: move to a function
-    let from_account = &ctx.accounts.bonding_curve;
-    let to_account = &ctx.accounts.user;
+    let from_account = &ctx.accounts.bonding_curve.to_account_info();
+    let user = &ctx.accounts.user;
+    let fee_recipient = &ctx.accounts.fee_recipient;
 
-    **from_account.to_account_info().try_borrow_mut_lamports()? -= sell_result.sol_amount;
-    **to_account.try_borrow_mut_lamports()? += sell_result.sol_amount;
-
-    //transfer fee to fee recipient
-    **from_account.to_account_info().try_borrow_mut_lamports()? -= fee;
-    **ctx.accounts.fee_recipient.try_borrow_mut_lamports()? += fee;
+    transfer_lamports(from_account, user, sell_result.sol_amount)?;
+    transfer_lamports(from_account, fee_recipient, fee)?;
 
     let bonding_curve = &mut ctx.accounts.bonding_curve;
     bonding_curve.real_token_reserves = amm.real_token_reserves as u64;
