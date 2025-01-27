@@ -51,8 +51,11 @@ pub struct Sell<'info> {
 }
 
 pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Result<()> {
-    //TODO: add check for initialisation or add comment why it is not needed
-
+    require!(
+        ctx.accounts.global.initialized,
+        CurveLaunchpadError::NotInitialized
+    );
+    
     //check if bonding curve is complete
     require!(
         !ctx.accounts.bonding_curve.complete,
