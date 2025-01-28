@@ -82,9 +82,8 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         CurveLaunchpadError::InsufficientTokens,
     );
 
-    //TODO: check this require later
-    //basically checks if token amount is not zero, it is u64 therefore no negatives.
-    //Maybe change mini buy to a higer value or remove because it will eventually fail later in apply_buy?
+    //placeholder for potential minimal buy amount requirment
+    //now filter only non zero amounts
     require!(token_amount > 0, CurveLaunchpadError::MinBuy);
 
     let target_token_amount = if ctx.accounts.bonding_curve_token_account.amount < token_amount {
@@ -199,7 +198,6 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         real_token_reserves: bonding_curve.real_token_reserves,
     });
 
-    //TODO: check if there no possibility to deadlock here if last buy left very low amount of real tokens
     if bonding_curve.real_token_reserves == 0 {
         bonding_curve.complete = true;
 
