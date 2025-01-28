@@ -52,9 +52,16 @@ pub struct Buy<'info> {
 }
 
 pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()> {
+    //confirm program is initialized
     require!(
         ctx.accounts.global.initialized,
         CurveLaunchpadError::NotInitialized
+    );
+
+    //confirm program is not paused
+    require!(
+        !ctx.accounts.global.paused,
+        CurveLaunchpadError::ProgramIsPaused
     );
 
     //bonding curve is not complete
@@ -75,6 +82,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         CurveLaunchpadError::InsufficientTokens,
     );
 
+    //TODO: check this require later
     //basically checks if token amount is not zero, it is u64 therefore no negatives.
     //Maybe change mini buy to a higer value or remove because it will eventually fail later in apply_buy?
     require!(token_amount > 0, CurveLaunchpadError::MinBuy);

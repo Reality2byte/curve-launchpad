@@ -5,6 +5,7 @@ use anchor_lang::prelude::*;
 pub struct Global {
     pub authority: Pubkey,
     pub initialized: bool,
+    pub paused: bool,
     pub fee_recipient: Pubkey,
     pub initial_virtual_token_reserves: u64,
     pub initial_virtual_sol_reserves: u64,

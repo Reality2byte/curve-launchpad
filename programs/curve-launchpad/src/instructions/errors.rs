@@ -30,4 +30,6 @@ pub enum CurveLaunchpadError {
     InvalidWithdrawAuthority,
     #[msg("New fee value exceeds 10%")]
     MaxFeeExceeded,
+    #[msg("Program is paused")]
+    ProgramIsPaused,
 }

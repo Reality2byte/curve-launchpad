@@ -90,6 +90,12 @@ pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -
         CurveLaunchpadError::NotInitialized
     );
 
+    //confirm program is not paused
+    require!(
+        !ctx.accounts.global.paused,
+        CurveLaunchpadError::ProgramIsPaused
+    );
+
     msg!(
         "create::BondingCurve::get_lamports: {:?}",
         &ctx.accounts.bonding_curve.get_lamports()

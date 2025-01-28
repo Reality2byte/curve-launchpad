@@ -11,7 +11,7 @@ pub struct SetParams<'info> {
     )]
     global: Box<Account<'info, Global>>,
 
-    user: Signer<'info>,
+    authority: Signer<'info>,
 
     system_program: Program<'info, System>,
 }
@@ -38,7 +38,7 @@ pub fn set_params(
 
     //confirm user is the authority
     require!(
-        global.authority == *ctx.accounts.user.key,
+        global.authority == *ctx.accounts.authority.key,
         CurveLaunchpadError::InvalidAuthority
     );
 

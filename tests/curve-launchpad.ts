@@ -241,12 +241,19 @@ describe("curve-launchpad", () => {
         new BN(DEFAULT_FEE_BASIS_POINTS.toString())
       )
       .accounts({
-        user: authority.publicKey,
+        authority: authority.publicKey,
         program: program.programId,
       })
       .signers([authority])
       .rpc();
 
+      await program.methods
+      .resume()
+      .accounts({
+        authority: authority.publicKey,
+      })
+      .signers([authority])
+      .rpc();
   });
 
   it("can mint a token", async () => {
@@ -829,7 +836,7 @@ describe("curve-launchpad", () => {
         new BN(100)
       )
       .accounts({
-        user: authority.publicKey,
+        authority: authority.publicKey,
         program: program.programId,
       })
       .transaction();
@@ -925,7 +932,7 @@ describe("curve-launchpad", () => {
           new BN(100)
         )
         .accounts({
-          user: tokenCreator.publicKey,
+          authority: tokenCreator.publicKey,
           program: program.programId,
         })
         .signers([tokenCreator])

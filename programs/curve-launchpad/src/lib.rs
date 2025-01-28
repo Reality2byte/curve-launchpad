@@ -29,6 +29,14 @@ pub mod curve_launchpad {
         sell::sell(ctx, token_amount, min_sol_output)
     }
 
+    pub fn pause(ctx: Context<Pause>) -> Result<()> {
+        pause::pause(ctx)
+    }    
+    
+    pub fn resume(ctx: Context<Resume>) -> Result<()> {
+        resume::resume(ctx)
+    }
+
     pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
         withdraw::withdraw(ctx)
     }

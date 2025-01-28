@@ -26,6 +26,7 @@ pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
 
     global.authority = *ctx.accounts.authority.key;
     global.initialized = true;
+    global.paused = true;
     global.initial_token_supply = DEFAULT_TOKEN_SUPPLY;
     global.initial_real_sol_reserves = 0;
     global.initial_real_token_reserves = DEFAULT_TOKEN_SUPPLY;
@@ -33,7 +34,7 @@ pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
     global.initial_virtual_token_reserves = 1_073_000_000_000_000;
     global.fee_basis_points = 50;
 
-    msg!("Initialized global state");
+    msg!("Initialized global state. NOTE: it is paused.");
 
     Ok(())
 }

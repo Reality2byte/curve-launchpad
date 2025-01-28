@@ -61,16 +61,25 @@ pub struct Withdraw<'info> {
 }
 
 pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
+    //confirm program is initialized
     require!(
         ctx.accounts.global.initialized,
         CurveLaunchpadError::NotInitialized
     );
 
+    //confirm program is not paused
+    require!(
+        !ctx.accounts.global.paused,
+        CurveLaunchpadError::ProgramIsPaused
+    );
+
+    //confirm bonding curve is complete
     require!(
         ctx.accounts.bonding_curve.complete,
         CurveLaunchpadError::BondingCurveNotComplete,
     );
 
+    //confirm authority
     require!(
         ctx.accounts.user.key() == ctx.accounts.global.withdraw_authority,
         CurveLaunchpadError::InvalidWithdrawAuthority,

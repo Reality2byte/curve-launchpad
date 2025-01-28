@@ -67,11 +67,18 @@ fn transfer_lamports(
 }
 
 pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Result<()> {
+    //confirm program is initialized
     require!(
         ctx.accounts.global.initialized,
         CurveLaunchpadError::NotInitialized
     );
 
+    //confirm program is not paused
+    require!(
+        !ctx.accounts.global.paused,
+        CurveLaunchpadError::ProgramIsPaused
+    );
+    
     //check if bonding curve is complete
     require!(
         !ctx.accounts.bonding_curve.complete,
