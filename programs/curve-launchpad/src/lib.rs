@@ -31,8 +31,8 @@ pub mod curve_launchpad {
 
     pub fn pause(ctx: Context<Pause>) -> Result<()> {
         pause::pause(ctx)
-    }    
-    
+    }
+
     pub fn resume(ctx: Context<Resume>) -> Result<()> {
         resume::resume(ctx)
     }

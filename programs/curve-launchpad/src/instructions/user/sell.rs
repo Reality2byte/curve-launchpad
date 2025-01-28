@@ -78,7 +78,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
         !ctx.accounts.global.paused,
         CurveLaunchpadError::ProgramIsPaused
     );
-    
+
     //check if bonding curve is complete
     require!(
         !ctx.accounts.bonding_curve.complete,

@@ -945,7 +945,87 @@ describe("curve-launchpad", () => {
     }
     assert.equal(errorCode, "InvalidAuthority");
   });
-});
+
+  it("user can't use intructions while program is paused", async () => {
+    await program.methods
+      .pause()
+      .accounts({
+        authority: authority.publicKey,
+      })
+      .signers([authority])
+      .rpc();
+    let errorCode = "";
+    try {
+      await simpleBuy(tokenCreator, 100n, 1n);
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "ProgramIsPaused");
+
+    try {
+      await simpleSell(tokenCreator, 100n, 1n);
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "ProgramIsPaused");
+
+    try {
+      let tx = await program.methods
+        .withdraw()
+        .accounts({
+          user: withdrawAuthority.publicKey,
+          mint: mint.publicKey,
+        })
+        .transaction();
+
+      await sendTransaction(
+        program,
+        tx,
+        [withdrawAuthority],
+        withdrawAuthority.publicKey
+      );
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "ProgramIsPaused");
+
+    try {
+      let name = "test";
+      let symbol = "tst";
+      let uri = "https://www.test.com";
+      const tx = await program.methods
+      .create(name, symbol, uri)
+      .accounts({
+        mint: mint.publicKey,
+        creator: tokenCreator.publicKey,
+        program: program.programId,
+      })
+      .transaction();
+
+    let txResult = await sendTransaction(
+      program,
+      tx,
+      [mint, tokenCreator],
+      tokenCreator.publicKey
+    );
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "ProgramIsPaused");
+  });
+})
 
 //TODO: test sell whole curve
 

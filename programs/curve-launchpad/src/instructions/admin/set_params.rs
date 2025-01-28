@@ -17,7 +17,7 @@ pub struct SetParams<'info> {
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct Reserves{
+pub struct Reserves {
     pub virtual_token_reserves: u64,
     pub virtual_sol_reserves: u64,
     pub real_token_reserves: u64,
