@@ -56,17 +56,12 @@ pub fn set_params(
     global.fee_basis_points = fee_basis_points;
     global.withdraw_authority = withdraw_authority;
 
-    //TODO: create later method new() for ParamsEven so you pass params without those
-    let initial_virtual_token_reserves = initial.virtual_token_reserves;
-    let initial_virtual_sol_reserves = initial.virtual_sol_reserves;
-    let initial_real_token_reserves = initial.real_token_reserves;
-
     emit_cpi!(SetParamsEvent {
         fee_recipient,
         withdraw_authority,
-        initial_virtual_token_reserves,
-        initial_virtual_sol_reserves,
-        initial_real_token_reserves,
+        initial_virtual_token_reserves: initial.virtual_token_reserves,
+        initial_virtual_sol_reserves: initial.virtual_sol_reserves,
+        initial_real_token_reserves: initial.real_token_reserves,
         initial_token_supply,
         fee_basis_points,
     });
