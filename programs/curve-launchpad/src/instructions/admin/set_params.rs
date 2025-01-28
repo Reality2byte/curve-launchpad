@@ -1,4 +1,4 @@
-use crate::{state::Global, CurveLaunchpadError, SetParamsEvent};
+use crate::{instructions::calculate_fee, state::Global, CurveLaunchpadError, SetParamsEvent};
 use anchor_lang::prelude::*;
 
 #[event_cpi]
@@ -40,6 +40,12 @@ pub fn set_params(
     require!(
         global.authority == *ctx.accounts.user.key,
         CurveLaunchpadError::InvalidAuthority
+    );
+
+    //confirm new fee value is less than 10%
+    require!(
+        calculate_fee(100, fee_basis_points) <= 10,
+        CurveLaunchpadError::MaxFeeExceeded
     );
 
     global.fee_recipient = fee_recipient;
