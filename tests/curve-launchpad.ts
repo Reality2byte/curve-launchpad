@@ -1,5 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
+import { BorshCoder, EventParser, Program } from "@coral-xyz/anchor";
 import { CurveLaunchpad } from "../target/types/curve_launchpad";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import {
@@ -78,13 +78,14 @@ describe("curve-launchpad", () => {
     Uint8Array.from(e)
   );
 
+  const eventParser = new EventParser(program.programId, new BorshCoder(program.idl));
   const mint = anchor.web3.Keypair.generate();
 
-  console.log("a", authority.publicKey);
-  console.log("b", tokenCreator.publicKey);
-  console.log("c", feeRecipient.publicKey);
-  console.log("e", withdrawAuthority.publicKey);
-  console.log("d", mint.publicKey);
+  // console.log("a", authority.publicKey);
+  // console.log("b", tokenCreator.publicKey);
+  // console.log("c", feeRecipient.publicKey);
+  // console.log("e", withdrawAuthority.publicKey);
+  // console.log("d", mint.publicKey);
 
   const [globalPDA] = PublicKey.findProgramAddressSync(
     [Buffer.from(GLOBAL_SEED)],
@@ -229,18 +230,7 @@ describe("curve-launchpad", () => {
   });
 
   it("Is initialized!", async () => {
-    // const r = await program.methods
-    //     .setFee(
-    //         new BN((100n).toString())
-    //     )
-    //     .accounts({
-    //       user: authority.publicKey,
-    //     })
-    //     .signers([authority])
-    //     .rpc();
-    // console.log({r})
-
-    console.log({ authority: authority.publicKey });
+    //console.log({ authority: authority.publicKey });
     await program.methods
       .initialize()
       .accounts({
@@ -250,7 +240,7 @@ describe("curve-launchpad", () => {
       .rpc();
 
     let global = await program.account.global.fetch(globalPDA);
-    console.log(global);
+    //console.log(global);
     assert.equal(global.authority.toBase58(), authority.publicKey.toBase58());
     assert.equal(global.initialized, true);
 
@@ -293,7 +283,7 @@ describe("curve-launchpad", () => {
       true
     );
 
-    console.log(bondingCurveTokenAccount.toString());
+    //console.log(bondingCurveTokenAccount.toString());
 
     let name = "test";
     let symbol = "tst";
@@ -315,25 +305,30 @@ describe("curve-launchpad", () => {
       tokenCreator.publicKey
     );
 
-    let createEvents = txResult.events.filter((event) => {
-      return event.name === "createEvent";
-    });
 
-    assert.equal(createEvents.length, 1);
+    //Leaving those blocks in case we will need to revert back to emit_cpi from emit
+    // let createEvents = txResult.events.filter((event) => {
+    //   return event.name === "createEvent";
+    // });
+    // assert.equal(createEvents.length, 1);
+    // let createEvent = toEvent("createEvent", createEvents[0]);
 
-    let createEvent = toEvent("createEvent", createEvents[0]);
+    let events = eventParser.parseLogs(txResult.response?.meta?.logMessages!)
+    let createEvent = events.next().value;
+    assert.equal(events.next().value, null);
+
     assert.notEqual(createEvent, null);
     if (createEvent != null) {
-      assert.equal(createEvent.name, name);
-      assert.equal(createEvent.symbol, symbol);
-      assert.equal(createEvent.uri, uri);
-      assert.equal(createEvent.mint.toBase58(), mint.publicKey.toBase58());
+      assert.equal(createEvent.data.name, name);
+      assert.equal(createEvent.data.symbol, symbol);
+      assert.equal(createEvent.data.uri, uri);
+      assert.equal(createEvent.data.mint.toBase58(), mint.publicKey.toBase58());
       assert.equal(
-        createEvent.bondingCurve.toBase58(),
+        createEvent.data.bondingCurve.toBase58(),
         bondingCurvePDA.toBase58()
       );
       assert.equal(
-        createEvent.creator.toBase58(),
+        createEvent.data.creator.toBase58(),
         tokenCreator.publicKey.toBase58()
       );
     }
@@ -410,7 +405,7 @@ describe("curve-launchpad", () => {
       buyMaxSOLAmount
     );
 
-    console.log(txResult.tx.response);
+    //console.log(txResult.tx.response);
 
     let feeRecipientPostBuySOLBalance = await connection.getBalance(
       feeRecipient.publicKey
@@ -424,27 +419,31 @@ describe("curve-launchpad", () => {
       DEFAULT_TOKEN_BALANCE - buyTokenAmount
     ).toString();
 
-    let tradeEvents = txResult.tx.events.filter((event) => {
-      return event.name === "tradeEvent";
-    });
-    assert.equal(tradeEvents.length, 1);
+    // let tradeEvents = txResult.tx.events.filter((event) => {
+    //   return event.name === "tradeEvent";
+    // });
+    // assert.equal(tradeEvents.length, 1);
+    // let tradeEvent = toEvent("tradeEvent", tradeEvents[0]);
+    
+    let events = eventParser.parseLogs(txResult.tx.response?.meta?.logMessages!)
+    let tradeEvent = events.next().value;
+    assert.equal(events.next().value, null);
 
-    let tradeEvent = toEvent("tradeEvent", tradeEvents[0]);
     assert.notEqual(tradeEvent, null);
     if (tradeEvent != null) {
       assert.equal(
-        tradeEvent.tokenAmount.toString(),
+        tradeEvent.data.tokenAmount.toString(),
         buyTokenAmount.toString()
       );
 
-      assert.equal(tradeEvent.isBuy, true);
+      assert.equal(tradeEvent.data.isBuy, true);
       assert.equal(
-        tradeEvent.solAmount.toString(),
+        tradeEvent.data.solAmount.toString(),
         buyResult.sol_amount.toString()
       );
 
       assert.equal(
-        tradeEvent.solAmount.toString(),
+        tradeEvent.data.solAmount.toString(),
         (buyMaxSOLAmount - fee).toString()
       );
     }
@@ -507,10 +506,6 @@ describe("curve-launchpad", () => {
       Number(fee)
     );
 
-    let tradeEvents = txResult.tx.events.filter((event) => {
-      return event.name === "tradeEvent";
-    });
-
     let userPostSaleBalance = await getSPLBalance(
       connection,
       mint.publicKey,
@@ -521,15 +516,23 @@ describe("curve-launchpad", () => {
       userPostSaleBalance,
       (BigInt(userPreSaleBalance) - tokenAmount).toString()
     );
-    assert.equal(tradeEvents.length, 1);
+    
+    // let tradeEvents = txResult.tx.events.filter((event) => {
+    //   return event.name === "tradeEvent";
+    // });
+    // assert.equal(tradeEvents.length, 1);
+    // let tradeEvent = toEvent("tradeEvent", tradeEvents[0]);
 
-    let tradeEvent = toEvent("tradeEvent", tradeEvents[0]);
+    let events = eventParser.parseLogs(txResult.tx.response?.meta?.logMessages!)
+    let tradeEvent = events.next().value;
+    assert.equal(events.next().value, null);
+
     assert.notEqual(tradeEvent, null);
     if (tradeEvent != null) {
-      assert.equal(tradeEvent.tokenAmount.toString(), tokenAmount.toString());
-      assert.equal(tradeEvent.isBuy, false);
+      assert.equal(tradeEvent.data.tokenAmount.toString(), tokenAmount.toString());
+      assert.equal(tradeEvent.data.isBuy, false);
       assert.equal(
-        tradeEvent.solAmount.toString(),
+        tradeEvent.data.solAmount.toString(),
         sellResults.sol_amount.toString()
       );
     }
@@ -654,7 +657,7 @@ describe("curve-launchpad", () => {
       maxSolAmount +
       calculateFee(maxSolAmount, Number(DEFAULT_FEE_BASIS_POINTS));
     let buyResult = currentAMM.applyBuy(buyTokenAmount);
-    console.log({ buyResult });
+    //console.log({ buyResult });
 
     let userPrePurchaseBalance = await getSPLBalance(
       connection,
@@ -664,20 +667,32 @@ describe("curve-launchpad", () => {
 
     let txResult = await simpleBuy(tokenCreator, buyTokenAmount, maxSolAmount);
 
-    let tradeEvents = txResult.tx.events.filter((event) => {
-      return event.name === "tradeEvent";
-    });
-    assert.equal(tradeEvents.length, 1);
+    // let tradeEvents = txResult.tx.events.filter((event) => {
+    //   return event.name === "tradeEvent";
+    // });
+    // assert.equal(tradeEvents.length, 1);
+    // let tradeEvent = toEvent("tradeEvent", tradeEvents[0]);
 
-    let tradeEvent = toEvent("tradeEvent", tradeEvents[0]);
+    let events = eventParser.parseLogs(txResult.tx.response?.meta?.logMessages!)
+    
+    let tradeEvent = events.next().value;
     assert.notEqual(tradeEvent, null);
     if (tradeEvent != null) {
-      assert.equal(tradeEvent.isBuy, true);
+      assert.equal(tradeEvent.data.isBuy, true);
       assert.equal(
-        tradeEvent.solAmount.toString(),
+        tradeEvent.data.solAmount.toString(),
         buyResult.sol_amount.toString()
       );
     }
+
+    let completeEvent = events.next().value;
+    assert.notEqual(completeEvent, null);
+    if (completeEvent != null) {
+      assert.equal(completeEvent.data.user, tokenCreator.publicKey.toBase58());
+      assert.equal(completeEvent.data.mint, mint.publicKey.toBase58());
+      assert.equal(completeEvent.data.bondingCurve, bondingCurvePDA.toBase58());
+    }
+    assert.equal(events.next().value, null);
 
     let userPostPurchaseBalance = await getSPLBalance(
       connection,
@@ -879,41 +894,43 @@ describe("curve-launchpad", () => {
 
     let global = await program.account.global.fetch(globalPDA);
 
-    let setParamsEvents = txResult.events.filter((event) => {
-      return event.name === "setParamsEvent";
-    });
+    // let setParamsEvents = txResult.events.filter((event) => {
+    //   return event.name === "setParamsEvent";
+    // });
+    // assert.equal(setParamsEvents.length, 1);
+    // let setParamsEvent = toEvent("setParamsEvent", setParamsEvents[0]);
 
-    assert.equal(setParamsEvents.length, 1);
+    let events = eventParser.parseLogs(txResult.response?.meta?.logMessages!)
+    let setParamsEvent = events.next().value;
 
-    let setParamsEvent = toEvent("setParamsEvent", setParamsEvents[0]);
     assert.notEqual(setParamsEvent, null);
     if (setParamsEvent != null) {
       assert.equal(
-        setParamsEvent.feeRecipient.toBase58(),
+        setParamsEvent.data.feeRecipient.toBase58(),
         randomFeeRecipient.publicKey.toBase58()
       );
       assert.equal(
-        setParamsEvent.withdrawAuthority.toBase58(),
+        setParamsEvent.data.withdrawAuthority.toBase58(),
         randomWithdrawAuthority.publicKey.toBase58()
       );
       assert.equal(
-        setParamsEvent.initialVirtualTokenReserves.toString(),
+        setParamsEvent.data.initialVirtualTokenReserves.toString(),
         new BN(1000).toString()
       );
       assert.equal(
-        setParamsEvent.initialVirtualSolReserves.toString(),
+        setParamsEvent.data.initialVirtualSolReserves.toString(),
         new BN(2000).toString()
       );
       assert.equal(
-        setParamsEvent.initialRealTokenReserves.toString(),
+        setParamsEvent.data.initialRealTokenReserves.toString(),
         new BN(3000).toString()
       );
       assert.equal(
-        setParamsEvent.initialTokenSupply.toString(),
+        setParamsEvent.data.initialTokenSupply.toString(),
         new BN(4000).toString()
       );
       assert.equal(
-        setParamsEvent.feeBasisPoints.toString(),
+        setParamsEvent.data.feeBasisPoints.toString(),
         new BN(100).toString()
       );
     }
