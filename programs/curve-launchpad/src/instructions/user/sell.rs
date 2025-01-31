@@ -1,5 +1,7 @@
 use crate::{
-    amm, calculate_fee, state::{BondingCurve, Global}, CurveLaunchpadError, TradeEvent
+    amm, calculate_fee,
+    state::{BondingCurve, Global},
+    CurveLaunchpadError, TradeEvent,
 };
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
@@ -48,7 +50,35 @@ pub struct Sell<'info> {
     token_program: Program<'info, Token>,
 }
 
+// https://solana.com/developers/cookbook/programs/transfer-sol
+fn transfer_lamports(
+    from_account: &AccountInfo,
+    to_account: &AccountInfo,
+    amount_of_lamports: u64,
+) -> Result<()> {
+    // Does the from account have enough lamports to transfer?
+    if **from_account.try_borrow_lamports()? < amount_of_lamports {
+        return Err(CurveLaunchpadError::InsufficientSOL.into());
+    }
+    // Debit from_account and credit to_account
+    **from_account.try_borrow_mut_lamports()? -= amount_of_lamports;
+    **to_account.try_borrow_mut_lamports()? += amount_of_lamports;
+    Ok(())
+}
+
 pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Result<()> {
+    //confirm program is initialized
+    require!(
+        ctx.accounts.global.initialized,
+        CurveLaunchpadError::NotInitialized
+    );
+
+    //confirm program is not paused
+    require!(
+        !ctx.accounts.global.paused,
+        CurveLaunchpadError::ProgramIsPaused
+    );
+
     //check if bonding curve is complete
     require!(
         !ctx.accounts.bonding_curve.complete,
@@ -75,7 +105,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
 
     require!(token_amount > 0, CurveLaunchpadError::MinSell,);
 
-    let mut amm = amm::amm::AMM::new(
+    let mut amm = amm::AMM::new(
         ctx.accounts.bonding_curve.virtual_sol_reserves as u128,
         ctx.accounts.bonding_curve.virtual_token_reserves as u128,
         ctx.accounts.bonding_curve.real_sol_reserves as u128,
@@ -92,7 +122,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
     //confirm min sol output is greater than sol output
     require!(
         sell_amount_minus_fee >= min_sol_output,
-        CurveLaunchpadError::MinSOLOutputExceeded,
+        CurveLaunchpadError::MinSOLOutputNotReached,
     );
 
     //transfer SPL
@@ -116,17 +146,12 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
     )?;
 
     //transfer SOL back to user
-    //TODO: check if this is correct
-    let from_account = &ctx.accounts.bonding_curve;
-    let to_account = &ctx.accounts.user;
+    let from_account = &ctx.accounts.bonding_curve.to_account_info();
+    let user = &ctx.accounts.user;
+    let fee_recipient = &ctx.accounts.fee_recipient;
 
-    **from_account.to_account_info().try_borrow_mut_lamports()? -= sell_result.sol_amount;
-    **to_account.try_borrow_mut_lamports()? += sell_result.sol_amount;
-
-    //transfer fee to fee recipient
-    **from_account.to_account_info().try_borrow_mut_lamports()? -= fee;
-    **ctx.accounts.fee_recipient.try_borrow_mut_lamports()? += fee;
-
+    transfer_lamports(from_account, user, sell_result.sol_amount)?;
+    transfer_lamports(from_account, fee_recipient, fee)?;
 
     let bonding_curve = &mut ctx.accounts.bonding_curve;
     bonding_curve.real_token_reserves = amm.real_token_reserves as u64;
@@ -139,7 +164,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
         sol_amount: sell_result.sol_amount,
         token_amount: sell_result.token_amount,
         is_buy: false,
-        user: *ctx.accounts.user.to_account_info().key,
+        user: *ctx.accounts.user.key,
         timestamp: Clock::get()?.unix_timestamp,
         virtual_sol_reserves: bonding_curve.virtual_sol_reserves,
         virtual_token_reserves: bonding_curve.virtual_token_reserves,

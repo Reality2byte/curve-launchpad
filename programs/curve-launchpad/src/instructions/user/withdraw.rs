@@ -61,16 +61,25 @@ pub struct Withdraw<'info> {
 }
 
 pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
+    //confirm program is initialized
     require!(
         ctx.accounts.global.initialized,
         CurveLaunchpadError::NotInitialized
     );
 
+    //confirm program is not paused
     require!(
-        ctx.accounts.bonding_curve.complete == true,
+        !ctx.accounts.global.paused,
+        CurveLaunchpadError::ProgramIsPaused
+    );
+
+    //confirm bonding curve is complete
+    require!(
+        ctx.accounts.bonding_curve.complete,
         CurveLaunchpadError::BondingCurveNotComplete,
     );
 
+    //confirm authority
     require!(
         ctx.accounts.user.key() == ctx.accounts.global.withdraw_authority,
         CurveLaunchpadError::InvalidWithdrawAuthority,
@@ -106,7 +115,7 @@ pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
     let from_account = &ctx.accounts.bonding_curve;
     let to_account = &ctx.accounts.user;
 
-    let min_balance = Rent::get()?.minimum_balance(8 + BondingCurve::INIT_SPACE as usize);
+    let min_balance = Rent::get()?.minimum_balance(8 + BondingCurve::INIT_SPACE);
 
     let total_bonding_curve_lamports = from_account.get_lamports() - min_balance;
 

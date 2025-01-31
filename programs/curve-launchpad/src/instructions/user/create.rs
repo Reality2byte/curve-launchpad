@@ -1,5 +1,6 @@
 use crate::{
-    state::{BondingCurve, Global}, CreateEvent, CurveLaunchpadError, DEFAULT_DECIMALS
+    state::{BondingCurve, Global},
+    CreateEvent, CurveLaunchpadError, DEFAULT_DECIMALS, METADATA_SEED, MINT_AUTHORITY_SEED,
 };
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -30,7 +31,7 @@ pub struct Create<'info> {
 
     /// CHECK: Using seed to validate mint_authority account
     #[account(
-        seeds=[b"mint-authority"],
+        seeds=[MINT_AUTHORITY_SEED],
         bump,
     )]
     mint_authority: UncheckedAccount<'info>,
@@ -62,8 +63,8 @@ pub struct Create<'info> {
     #[account(
         mut,
         seeds = [
-            b"metadata", 
-            token_metadata_program.key.as_ref(), 
+            METADATA_SEED,
+            token_metadata_program.key.as_ref(),
             mint.to_account_info().key.as_ref()
         ],
         seeds::program = token_metadata_program.key(),
@@ -82,7 +83,6 @@ pub struct Create<'info> {
     rent: Sysvar<'info, Rent>,
 }
 
-
 pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -> Result<()> {
     //confirm program is initialized
     require!(
@@ -90,9 +90,18 @@ pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -
         CurveLaunchpadError::NotInitialized
     );
 
-    msg!("create::BondingCurve::get_lamports: {:?}", &ctx.accounts.bonding_curve.get_lamports());
+    //confirm program is not paused
+    require!(
+        !ctx.accounts.global.paused,
+        CurveLaunchpadError::ProgramIsPaused
+    );
 
-    let seeds = &["mint-authority".as_bytes(), &[ctx.bumps.mint_authority]];
+    msg!(
+        "create::BondingCurve::get_lamports: {:?}",
+        &ctx.accounts.bonding_curve.get_lamports()
+    );
+
+    let seeds = &[MINT_AUTHORITY_SEED, &[ctx.bumps.mint_authority]];
     let signer = [&seeds[..]];
 
     let token_data: DataV2 = DataV2 {
@@ -160,7 +169,7 @@ pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -
         uri,
         mint: *ctx.accounts.mint.to_account_info().key,
         bonding_curve: *ctx.accounts.bonding_curve.to_account_info().key,
-        creator: *ctx.accounts.creator.to_account_info().key,
+        creator: *ctx.accounts.creator.key,
     });
 
     Ok(())

@@ -24,11 +24,36 @@ const GLOBAL_SEED = "global";
 const BONDING_CURVE_SEED = "bonding-curve";
 
 //TODO: Unit test order is essential, need to refactor to make it so its not.
-const a = [112,150,75,3,64,208,247,216,228,120,150,50,85,48,230,0,191,7,41,62,173,204,221,111,12,119,139,74,181,38,46,126,201,12,90,146,240,189,178,136,141,123,132,252,94,163,48,184,243,178,140,186,201,51,185,205,252,71,225,144,20,147,37,206];
-const b = [111,55,173,215,173,69,53,205,52,69,171,224,185,154,158,142,206,116,57,72,48,178,164,196,74,15,203,77,234,29,254,183,0,24,106,100,94,229,254,104,25,92,89,3,225,90,225,240,149,69,226,44,144,100,155,19,15,146,141,161,254,158,74,9];
-const c = [248,27,179,244,227,232,104,143,190,189,147,112,207,134,50,245,150,54,58,90,107,23,83,167,184,238,142,54,27,150,15,113,14,246,144,98,110,97,75,111,167,155,237,117,19,72,175,31,251,204,78,138,97,100,174,149,249,231,238,104,168,215,2,103];
-const e = [59,148,28,16,60,210,57,58,248,94,249,191,164,79,155,26,39,232,218,119,42,13,204,116,139,58,198,230,241,102,188,205,49,87,16,187,106,47,61,112,49,139,157,11,107,145,205,33,190,173,166,138,217,128,46,60,78,222,207,1,127,46,237,205];
-const d = [217,12,122,124,188,48,231,113,79,186,10,168,211,109,122,127,150,19,182,201,62,49,81,83,132,85,84,254,236,2,218,222,45,40,182,230,171,58,104,219,150,114,87,4,101,110,248,90,134,136,114,68,21,152,141,18,27,248,111,158,221,210,180,145];
+const a = [
+  112, 150, 75, 3, 64, 208, 247, 216, 228, 120, 150, 50, 85, 48, 230, 0, 191, 7,
+  41, 62, 173, 204, 221, 111, 12, 119, 139, 74, 181, 38, 46, 126, 201, 12, 90,
+  146, 240, 189, 178, 136, 141, 123, 132, 252, 94, 163, 48, 184, 243, 178, 140,
+  186, 201, 51, 185, 205, 252, 71, 225, 144, 20, 147, 37, 206,
+];
+const b = [
+  111, 55, 173, 215, 173, 69, 53, 205, 52, 69, 171, 224, 185, 154, 158, 142,
+  206, 116, 57, 72, 48, 178, 164, 196, 74, 15, 203, 77, 234, 29, 254, 183, 0,
+  24, 106, 100, 94, 229, 254, 104, 25, 92, 89, 3, 225, 90, 225, 240, 149, 69,
+  226, 44, 144, 100, 155, 19, 15, 146, 141, 161, 254, 158, 74, 9,
+];
+const c = [
+  248, 27, 179, 244, 227, 232, 104, 143, 190, 189, 147, 112, 207, 134, 50, 245,
+  150, 54, 58, 90, 107, 23, 83, 167, 184, 238, 142, 54, 27, 150, 15, 113, 14,
+  246, 144, 98, 110, 97, 75, 111, 167, 155, 237, 117, 19, 72, 175, 31, 251, 204,
+  78, 138, 97, 100, 174, 149, 249, 231, 238, 104, 168, 215, 2, 103,
+];
+const e = [
+  59, 148, 28, 16, 60, 210, 57, 58, 248, 94, 249, 191, 164, 79, 155, 26, 39,
+  232, 218, 119, 42, 13, 204, 116, 139, 58, 198, 230, 241, 102, 188, 205, 49,
+  87, 16, 187, 106, 47, 61, 112, 49, 139, 157, 11, 107, 145, 205, 33, 190, 173,
+  166, 138, 217, 128, 46, 60, 78, 222, 207, 1, 127, 46, 237, 205,
+];
+const d = [
+  217, 12, 122, 124, 188, 48, 231, 113, 79, 186, 10, 168, 211, 109, 122, 127,
+  150, 19, 182, 201, 62, 49, 81, 83, 132, 85, 84, 254, 236, 2, 218, 222, 45, 40,
+  182, 230, 171, 58, 104, 219, 150, 114, 87, 4, 101, 110, 248, 90, 134, 136,
+  114, 68, 21, 152, 141, 18, 27, 248, 111, 158, 221, 210, 180, 145,
+];
 describe("curve-launchpad", () => {
   const DEFAULT_DECIMALS = 6n;
   const DEFAULT_TOKEN_BALANCE =
@@ -49,15 +74,17 @@ describe("curve-launchpad", () => {
   const authority = anchor.web3.Keypair.fromSecretKey(Uint8Array.from(a));
   const tokenCreator = anchor.web3.Keypair.fromSecretKey(Uint8Array.from(b));
   const feeRecipient = anchor.web3.Keypair.fromSecretKey(Uint8Array.from(c));
-  const withdrawAuthority = anchor.web3.Keypair.fromSecretKey(Uint8Array.from(e));
+  const withdrawAuthority = anchor.web3.Keypair.fromSecretKey(
+    Uint8Array.from(e)
+  );
 
   const mint = anchor.web3.Keypair.generate();
 
-  console.log('a', authority.publicKey);
-  console.log('b', tokenCreator.publicKey);
-  console.log('c', feeRecipient.publicKey);
-  console.log('e', withdrawAuthority.publicKey);
-  console.log('d', mint.publicKey);
+  console.log("a", authority.publicKey);
+  console.log("b", tokenCreator.publicKey);
+  console.log("c", feeRecipient.publicKey);
+  console.log("e", withdrawAuthority.publicKey);
+  console.log("d", mint.publicKey);
 
   const [globalPDA] = PublicKey.findProgramAddressSync(
     [Buffer.from(GLOBAL_SEED)],
@@ -186,35 +213,34 @@ describe("curve-launchpad", () => {
   };
 
   before(async () => {
-    // await fundAccountSOL(connection, authority.publicKey, 5 * LAMPORTS_PER_SOL);
-    //
-    // await fundAccountSOL(
-    //   connection,
-    //   tokenCreator.publicKey,
-    //   200 * LAMPORTS_PER_SOL
-    // );
-    //
-    // await fundAccountSOL(
-    //   connection,
-    //   withdrawAuthority.publicKey,
-    //   5 * LAMPORTS_PER_SOL
-    // );
+    await fundAccountSOL(connection, authority.publicKey, 5 * LAMPORTS_PER_SOL);
+
+    await fundAccountSOL(
+      connection,
+      tokenCreator.publicKey,
+      200 * LAMPORTS_PER_SOL
+    );
+
+    await fundAccountSOL(
+      connection,
+      withdrawAuthority.publicKey,
+      5 * LAMPORTS_PER_SOL
+    );
   });
 
   it("Is initialized!", async () => {
+    // const r = await program.methods
+    //     .setFee(
+    //         new BN((100n).toString())
+    //     )
+    //     .accounts({
+    //       user: authority.publicKey,
+    //     })
+    //     .signers([authority])
+    //     .rpc();
+    // console.log({r})
 
-    const r = await program.methods
-        .setFee(
-            new BN((100n).toString())
-        )
-        .accounts({
-          user: authority.publicKey,
-        })
-        .signers([authority])
-        .rpc();
-    console.log({r})
-
-    console.log({authority: authority.publicKey})
+    console.log({ authority: authority.publicKey });
     await program.methods
       .initialize()
       .accounts({
@@ -224,27 +250,40 @@ describe("curve-launchpad", () => {
       .rpc();
 
     let global = await program.account.global.fetch(globalPDA);
-    console.log(global)
+    console.log(global);
     assert.equal(global.authority.toBase58(), authority.publicKey.toBase58());
     assert.equal(global.initialized, true);
 
-    // await program.methods
-    //   .setParams(
-    //     feeRecipient.publicKey,
-    //     withdrawAuthority.publicKey,
-    //     new BN(DEFUALT_INITIAL_VIRTUAL_TOKEN_RESERVE.toString()),
-    //     new BN(DEFAULT_INITIAL_VIRTUAL_SOL_RESERVE.toString()),
-    //     new BN(DEFAULT_INITIAL_TOKEN_RESERVES.toString()),
-    //     new BN(DEFAULT_TOKEN_BALANCE.toString()),
-    //     new BN(DEFAULT_FEE_BASIS_POINTS.toString())
-    //   )
-    //   .accounts({
-    //     user: authority.publicKey,
-    //     program: program.programId,
-    //   })
-    //   .signers([authority])
-    //   .rpc();
+    await program.methods
+      .setParams(
+        feeRecipient.publicKey,
+        withdrawAuthority.publicKey,
+        {
+          virtualTokenReserves: new BN(
+            DEFUALT_INITIAL_VIRTUAL_TOKEN_RESERVE.toString()
+          ),
+          virtualSolReserves: new BN(
+            DEFAULT_INITIAL_VIRTUAL_SOL_RESERVE.toString()
+          ),
+          realTokenReserves: new BN(DEFAULT_INITIAL_TOKEN_RESERVES.toString()),
+        },
+        new BN(DEFAULT_TOKEN_BALANCE.toString()),
+        new BN(DEFAULT_FEE_BASIS_POINTS.toString())
+      )
+      .accounts({
+        authority: authority.publicKey,
+        program: program.programId,
+      })
+      .signers([authority])
+      .rpc();
 
+    await program.methods
+      .resume()
+      .accounts({
+        authority: authority.publicKey,
+      })
+      .signers([authority])
+      .rpc();
   });
 
   it("can mint a token", async () => {
@@ -254,7 +293,7 @@ describe("curve-launchpad", () => {
       true
     );
 
-    console.log(bondingCurveTokenAccount.toString())
+    console.log(bondingCurveTokenAccount.toString());
 
     let name = "test";
     let symbol = "tst";
@@ -356,7 +395,7 @@ describe("curve-launchpad", () => {
 
     let buyTokenAmount = DEFAULT_TOKEN_BALANCE / 100n;
     let buyMaxSOLAmount = currentAMM.getBuyPrice(buyTokenAmount);
-    let fee = calculateFee(buyMaxSOLAmount, Number(DEFAULT_FEE_BASIS_POINTS_1));
+    let fee = calculateFee(buyMaxSOLAmount, Number(DEFAULT_FEE_BASIS_POINTS));
     buyMaxSOLAmount = buyMaxSOLAmount + fee;
 
     let buyResult = currentAMM.applyBuy(buyTokenAmount);
@@ -371,7 +410,7 @@ describe("curve-launchpad", () => {
       buyMaxSOLAmount
     );
 
-    console.log(txResult.tx.response)
+    console.log(txResult.tx.response);
 
     let feeRecipientPostBuySOLBalance = await connection.getBalance(
       feeRecipient.publicKey
@@ -602,7 +641,7 @@ describe("curve-launchpad", () => {
         errorCode = anchorError.error.errorCode.code;
       }
     }
-    assert.equal(errorCode, "MinSOLOutputExceeded");
+    assert.equal(errorCode, "MinSOLOutputNotReached");
   });
 
   //curve complete unit tests
@@ -615,7 +654,7 @@ describe("curve-launchpad", () => {
       maxSolAmount +
       calculateFee(maxSolAmount, Number(DEFAULT_FEE_BASIS_POINTS));
     let buyResult = currentAMM.applyBuy(buyTokenAmount);
-    console.log({buyResult})
+    console.log({ buyResult });
 
     let userPrePurchaseBalance = await getSPLBalance(
       connection,
@@ -770,7 +809,6 @@ describe("curve-launchpad", () => {
     //confirm PDA only remaining balance is rent exempt
     assert.equal(bondingCurvePostSOLBalance, minBalanceRentExempt);
 
-
     //check if there is more SOL in withdraw authority then the bonding curve pre transfer
     //TODO: Calculate the correct amount of SOL that should be in the withdraw authority
     let withdrawAuthorityPostSOLBalance = await connection.getBalance(
@@ -809,130 +847,215 @@ describe("curve-launchpad", () => {
     assert.notEqual(bondingCurveAccount, null);
   });
 
-  // //param unit tests
-  // it("can set params", async () => {
-  //   const randomFeeRecipient = anchor.web3.Keypair.generate();
-  //   const randomWithdrawAuthority = anchor.web3.Keypair.generate();
-  //
-  //   let tx = await program.methods
-  //     .setParams(
-  //       randomFeeRecipient.publicKey,
-  //       randomWithdrawAuthority.publicKey,
-  //       new BN(1000),
-  //       new BN(2000),
-  //       new BN(3000),
-  //       new BN(4000),
-  //       new BN(100)
-  //     )
-  //     .accounts({
-  //       user: authority.publicKey,
-  //       program: program.programId,
-  //     })
-  //     .transaction();
-  //
-  //   let txResult = await sendTransaction(
-  //     program,
-  //     tx,
-  //     [authority],
-  //     authority.publicKey
-  //   );
-  //
-  //   let global = await program.account.global.fetch(globalPDA);
-  //
-  //   let setParamsEvents = txResult.events.filter((event) => {
-  //     return event.name === "setParamsEvent";
-  //   });
-  //
-  //   assert.equal(setParamsEvents.length, 1);
-  //
-  //   let setParamsEvent = toEvent("setParamsEvent", setParamsEvents[0]);
-  //   assert.notEqual(setParamsEvent, null);
-  //   if (setParamsEvent != null) {
-  //     assert.equal(
-  //       setParamsEvent.feeRecipient.toBase58(),
-  //       randomFeeRecipient.publicKey.toBase58()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.withdrawAuthority.toBase58(),
-  //       randomWithdrawAuthority.publicKey.toBase58()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.initialVirtualTokenReserves.toString(),
-  //       new BN(1000).toString()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.initialVirtualSolReserves.toString(),
-  //       new BN(2000).toString()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.initialRealTokenReserves.toString(),
-  //       new BN(3000).toString()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.initialTokenSupply.toString(),
-  //       new BN(4000).toString()
-  //     );
-  //     assert.equal(
-  //       setParamsEvent.feeBasisPoints.toString(),
-  //       new BN(100).toString()
-  //     );
-  //   }
-  //
-  //   assert.equal(
-  //     global.feeRecipient.toBase58(),
-  //     randomFeeRecipient.publicKey.toBase58()
-  //   );
-  //   assert.equal(
-  //     global.withdrawAuthority.toBase58(),
-  //     randomWithdrawAuthority.publicKey.toBase58()
-  //   );
-  //   assert.equal(
-  //     global.initialVirtualTokenReserves.toString(),
-  //     new BN(1000).toString()
-  //   );
-  //   assert.equal(
-  //     global.initialVirtualSolReserves.toString(),
-  //     new BN(2000).toString()
-  //   );
-  //   assert.equal(
-  //     global.initialRealTokenReserves.toString(),
-  //     new BN(3000).toString()
-  //   );
-  //   assert.equal(global.initialTokenSupply.toString(), new BN(4000).toString());
-  //   assert.equal(global.feeBasisPoints.toString(), new BN(100).toString());
-  // });
-  //
-  // it("can't set params as non-authority", async () => {
-  //   let errorCode = "";
-  //   try {
-  //     const randomFeeRecipient = anchor.web3.Keypair.generate();
-  //     const randomWithdrawAuthority = anchor.web3.Keypair.generate();
-  //
-  //     await program.methods
-  //       .setParams(
-  //         randomFeeRecipient.publicKey,
-  //         randomWithdrawAuthority.publicKey,
-  //         new BN(1000),
-  //         new BN(2000),
-  //         new BN(3000),
-  //         new BN(4000),
-  //         new BN(100)
-  //       )
-  //       .accounts({
-  //         user: tokenCreator.publicKey,
-  //         program: program.programId,
-  //       })
-  //       .signers([tokenCreator])
-  //       .rpc();
-  //   } catch (err) {
-  //     let anchorError = getAnchorError(err);
-  //     if (anchorError) {
-  //       errorCode = anchorError.error.errorCode.code;
-  //     }
-  //   }
-  //   assert.equal(errorCode, "InvalidAuthority");
-  // });
+  //param unit tests
+  it("can set params", async () => {
+    const randomFeeRecipient = anchor.web3.Keypair.generate();
+    const randomWithdrawAuthority = anchor.web3.Keypair.generate();
+
+    let tx = await program.methods
+      .setParams(
+        randomFeeRecipient.publicKey,
+        randomWithdrawAuthority.publicKey,
+        {
+          virtualTokenReserves: new BN(1000),
+          virtualSolReserves: new BN(2000),
+          realTokenReserves: new BN(3000),
+        },
+        new BN(4000),
+        new BN(100)
+      )
+      .accounts({
+        authority: authority.publicKey,
+        program: program.programId,
+      })
+      .transaction();
+
+    let txResult = await sendTransaction(
+      program,
+      tx,
+      [authority],
+      authority.publicKey
+    );
+
+    let global = await program.account.global.fetch(globalPDA);
+
+    let setParamsEvents = txResult.events.filter((event) => {
+      return event.name === "setParamsEvent";
+    });
+
+    assert.equal(setParamsEvents.length, 1);
+
+    let setParamsEvent = toEvent("setParamsEvent", setParamsEvents[0]);
+    assert.notEqual(setParamsEvent, null);
+    if (setParamsEvent != null) {
+      assert.equal(
+        setParamsEvent.feeRecipient.toBase58(),
+        randomFeeRecipient.publicKey.toBase58()
+      );
+      assert.equal(
+        setParamsEvent.withdrawAuthority.toBase58(),
+        randomWithdrawAuthority.publicKey.toBase58()
+      );
+      assert.equal(
+        setParamsEvent.initialVirtualTokenReserves.toString(),
+        new BN(1000).toString()
+      );
+      assert.equal(
+        setParamsEvent.initialVirtualSolReserves.toString(),
+        new BN(2000).toString()
+      );
+      assert.equal(
+        setParamsEvent.initialRealTokenReserves.toString(),
+        new BN(3000).toString()
+      );
+      assert.equal(
+        setParamsEvent.initialTokenSupply.toString(),
+        new BN(4000).toString()
+      );
+      assert.equal(
+        setParamsEvent.feeBasisPoints.toString(),
+        new BN(100).toString()
+      );
+    }
+
+    assert.equal(
+      global.feeRecipient.toBase58(),
+      randomFeeRecipient.publicKey.toBase58()
+    );
+    assert.equal(
+      global.withdrawAuthority.toBase58(),
+      randomWithdrawAuthority.publicKey.toBase58()
+    );
+    assert.equal(
+      global.initialVirtualTokenReserves.toString(),
+      new BN(1000).toString()
+    );
+    assert.equal(
+      global.initialVirtualSolReserves.toString(),
+      new BN(2000).toString()
+    );
+    assert.equal(
+      global.initialRealTokenReserves.toString(),
+      new BN(3000).toString()
+    );
+    assert.equal(global.initialTokenSupply.toString(), new BN(4000).toString());
+    assert.equal(global.feeBasisPoints.toString(), new BN(100).toString());
+  });
+
+  it("can't set params as non-authority", async () => {
+    let errorCode = "";
+    try {
+      const randomFeeRecipient = anchor.web3.Keypair.generate();
+      const randomWithdrawAuthority = anchor.web3.Keypair.generate();
+
+      await program.methods
+        .setParams(
+          randomFeeRecipient.publicKey,
+          randomWithdrawAuthority.publicKey,
+          {
+            virtualTokenReserves: new BN(1000),
+            virtualSolReserves: new BN(2000),
+            realTokenReserves: new BN(3000),
+          },
+          new BN(4000),
+          new BN(100)
+        )
+        .accounts({
+          authority: tokenCreator.publicKey,
+          program: program.programId,
+        })
+        .signers([tokenCreator])
+        .rpc();
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "InvalidAuthority");
+  });
+
+  it("user can't use intructions while program is paused", async () => {
+    await program.methods
+      .pause()
+      .accounts({
+        authority: authority.publicKey,
+      })
+      .signers([authority])
+      .rpc();
+    let errorCode = "";
+    try {
+      await simpleBuy(tokenCreator, 100n, 1n);
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "ProgramIsPaused");
+
+    try {
+      await simpleSell(tokenCreator, 100n, 1n);
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "ProgramIsPaused");
+
+    try {
+      let tx = await program.methods
+        .withdraw()
+        .accounts({
+          user: withdrawAuthority.publicKey,
+          mint: mint.publicKey,
+        })
+        .transaction();
+
+      await sendTransaction(
+        program,
+        tx,
+        [withdrawAuthority],
+        withdrawAuthority.publicKey
+      );
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "ProgramIsPaused");
+
+    try {
+      let name = "test";
+      let symbol = "tst";
+      let uri = "https://www.test.com";
+      const tx = await program.methods
+        .create(name, symbol, uri)
+        .accounts({
+          mint: mint.publicKey,
+          creator: tokenCreator.publicKey,
+          program: program.programId,
+        })
+        .transaction();
+
+      let txResult = await sendTransaction(
+        program,
+        tx,
+        [mint, tokenCreator],
+        tokenCreator.publicKey
+      );
+    } catch (err) {
+      let anchorError = getAnchorError(err);
+      if (anchorError) {
+        errorCode = anchorError.error.errorCode.code;
+      }
+    }
+    assert.equal(errorCode, "ProgramIsPaused");
+  });
 });
 
-//TODO: Tests
-// test sell whole curve
+//TODO: test sell whole curve
+
+//TODO: test authority change

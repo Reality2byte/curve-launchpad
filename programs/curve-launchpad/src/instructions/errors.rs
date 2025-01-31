@@ -1,6 +1,5 @@
 use anchor_lang::error_code;
 
-
 #[error_code]
 pub enum CurveLaunchpadError {
     #[msg("Global Already Initialized")]
@@ -20,7 +19,7 @@ pub enum CurveLaunchpadError {
     #[msg("Max SOL Cost Exceeded")]
     MaxSOLCostExceeded,
     #[msg("Min SOL Output Exceeded")]
-    MinSOLOutputExceeded,
+    MinSOLOutputNotReached,
     #[msg("Min buy is 1 Token")]
     MinBuy,
     #[msg("Min sell is 1 Token")]
@@ -29,4 +28,8 @@ pub enum CurveLaunchpadError {
     InvalidFeeRecipient,
     #[msg("Invalid Withdraw Authority")]
     InvalidWithdrawAuthority,
+    #[msg("New fee value exceeds 10%")]
+    MaxFeeExceeded,
+    #[msg("Program is paused")]
+    ProgramIsPaused,
 }
