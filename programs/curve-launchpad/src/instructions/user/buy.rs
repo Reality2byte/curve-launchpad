@@ -196,6 +196,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         virtual_token_reserves: bonding_curve.virtual_token_reserves,
         real_sol_reserves: bonding_curve.real_sol_reserves,
         real_token_reserves: bonding_curve.real_token_reserves,
+        finished_bounding_curve: bonding_curve.real_sol_reserves == 0,
     });
 
     if bonding_curve.real_token_reserves == 0 {

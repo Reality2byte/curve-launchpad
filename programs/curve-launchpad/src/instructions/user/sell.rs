@@ -170,6 +170,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
         virtual_token_reserves: bonding_curve.virtual_token_reserves,
         real_sol_reserves: bonding_curve.real_sol_reserves,
         real_token_reserves: bonding_curve.real_token_reserves,
+        finished_bounding_curve: bonding_curve.real_sol_reserves == 0,
     });
 
     Ok(())
