@@ -22,6 +22,7 @@ pub struct TradeEvent {
     pub virtual_token_reserves: u64,
     pub real_sol_reserves: u64,
     pub real_token_reserves: u64,
+    pub finished_bounding_curve: bool,
 }
 
 #[event]

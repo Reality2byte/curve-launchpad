@@ -185,7 +185,7 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
     bonding_curve.virtual_token_reserves = amm.virtual_token_reserves as u64;
     bonding_curve.virtual_sol_reserves = amm.virtual_sol_reserves as u64;
 
-    emit_cpi!(TradeEvent {
+    emit!(TradeEvent {
         mint: *ctx.accounts.mint.to_account_info().key,
         sol_amount: buy_result.sol_amount,
         token_amount: buy_result.token_amount,
@@ -196,12 +196,13 @@ pub fn buy(ctx: Context<Buy>, token_amount: u64, max_sol_cost: u64) -> Result<()
         virtual_token_reserves: bonding_curve.virtual_token_reserves,
         real_sol_reserves: bonding_curve.real_sol_reserves,
         real_token_reserves: bonding_curve.real_token_reserves,
+        finished_bounding_curve: bonding_curve.real_sol_reserves == 0,
     });
 
     if bonding_curve.real_token_reserves == 0 {
         bonding_curve.complete = true;
 
-        emit_cpi!(CompleteEvent {
+        emit!(CompleteEvent {
             user: *ctx.accounts.user.key,
             mint: *ctx.accounts.mint.to_account_info().key,
             bonding_curve: *ctx.accounts.bonding_curve.to_account_info().key,

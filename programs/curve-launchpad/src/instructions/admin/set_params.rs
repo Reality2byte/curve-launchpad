@@ -56,7 +56,7 @@ pub fn set_params(
     global.fee_basis_points = fee_basis_points;
     global.withdraw_authority = withdraw_authority;
 
-    emit_cpi!(SetParamsEvent {
+    emit!(SetParamsEvent {
         fee_recipient,
         withdraw_authority,
         initial_virtual_token_reserves: initial.virtual_token_reserves,

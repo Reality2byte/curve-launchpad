@@ -159,7 +159,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
     bonding_curve.virtual_token_reserves = amm.virtual_token_reserves as u64;
     bonding_curve.virtual_sol_reserves = amm.virtual_sol_reserves as u64;
 
-    emit_cpi!(TradeEvent {
+    emit!(TradeEvent {
         mint: *ctx.accounts.mint.to_account_info().key,
         sol_amount: sell_result.sol_amount,
         token_amount: sell_result.token_amount,
@@ -170,6 +170,7 @@ pub fn sell(ctx: Context<Sell>, token_amount: u64, min_sol_output: u64) -> Resul
         virtual_token_reserves: bonding_curve.virtual_token_reserves,
         real_sol_reserves: bonding_curve.real_sol_reserves,
         real_token_reserves: bonding_curve.real_token_reserves,
+        finished_bounding_curve: bonding_curve.real_sol_reserves == 0,
     });
 
     Ok(())

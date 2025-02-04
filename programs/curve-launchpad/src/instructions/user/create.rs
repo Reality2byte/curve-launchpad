@@ -163,7 +163,7 @@ pub fn create(ctx: Context<Create>, name: String, symbol: String, uri: String) -
     bonding_curve.token_total_supply = ctx.accounts.global.initial_token_supply;
     bonding_curve.complete = false;
 
-    emit_cpi!(CreateEvent {
+    emit!(CreateEvent {
         name,
         symbol,
         uri,
